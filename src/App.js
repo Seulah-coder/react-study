@@ -1,52 +1,56 @@
-import logo from './logo.svg';
-import './App.css';
-import React from 'react';
-import PropTypes from "prop-types";
 
-function Btn({banana, big, changeValue, fontSize = 16}) {
-    //prop.banana = {banana}
-    console.log(banana, big);
-    console.log(banana, "was rendered")
-    console.log(fontSize);
-    return <button
-        onClick={changeValue}
-        style={{
-            backgroundColor: "tomato",
-            color: "white",
-            padding: "10px 20px",
-            border: 0,
-            borderRadius: 10,
-            // fontSize: big? 18 : 16
-            fontSize: fontSize,
-        }}
-    > {banana}
-    </button>
-}
+import Button from "./Button";
+import styles from "./App.module.css";
+import {useState, useEffect} from "react";
+import {func} from "prop-types";
 
-//reuseable button
-
-//if the component changes the state, make it re-render
-
-//reactMemo - we can decide which one should be rendered***
-const MemorizedBtn = React.memo(Btn);
-
-//at least to get warning(nice warning for developer)
-Btn.propTypes = {
-    banana: PropTypes.string.isRequired,
-    fontSize: PropTypes.number,
-    x : PropTypes.bool
-}
 function App() {
-    const [value, setValue] = React.useState("Save Changes");
-    const changeValue = () => setValue("Revert Changes");
-    //함수를 btn에 argument로 보내기
-    return (<div>
-        <MemorizedBtn banana={value} changeValue={changeValue} x={false} big={true} fontSize={18}/>
-        <MemorizedBtn banana="Continue" y={7}/>
-        {/*<Btn banana={value} changeValue={changeValue} x={false} big={true}/>*/}
-        {/*<Btn banana="Continue" y={7}/>*/}
-    </div>);
+    const [counter, setValue] = useState(0);
+    const [keyword, setKeyword] = useState("");
+    const onclick = () => setValue((prev) => prev +1);
+    const onChange = (event) => setKeyword(event.target.value);
+    console.log("I run all the time.");
 
+    useEffect(() => {
+        console.log("I run only once.");
+    }, []);
+    //empty array = only runs one time when the page is loaded
+
+    useEffect(() => {
+        console.log("I run when 'keyword' changes.")
+    }, [keyword]);
+
+    useEffect(() => {
+        console.log("I run when 'counter' changes.")
+    }, [counter]);
+
+    const [showing, setShowing] = useState(false);
+    const onClickShowing = () => setShowing((prev) => !prev);
+
+    function Hello(){
+        function byFn(){
+            console.log("bye:(")
+        }
+        function hiFn(){
+            console.log("created :)");
+            return byFn;
+        }
+        useEffect(hiFn, []);
+        //no dependency
+        return <h1>Hello</h1>;
+    }
+
+
+    return (<div>
+            <input value={keyword} onChange={onChange} type="text" placeholder="Search here..."/>
+    <h1 className={styles.title}>Welcome back!</h1>
+            <Button text={"Continue"}/>
+            <h1>{counter}</h1>
+            <button onClick={onclick}>click me</button>
+            {showing ? <Hello /> : null}
+            <button onClick={onClickShowing}>{showing ? "Hide" : "Show"}</button>
+    </div>
+    );
 }
 
 export default App;
