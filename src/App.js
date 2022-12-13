@@ -1,54 +1,30 @@
 
-import Button from "./Button";
-import styles from "./App.module.css";
-import {useState, useEffect} from "react";
-import {func} from "prop-types";
+import {useState} from "react";
 
 function App() {
-    const [counter, setValue] = useState(0);
-    const [keyword, setKeyword] = useState("");
-    const onclick = () => setValue((prev) => prev +1);
-    const onChange = (event) => setKeyword(event.target.value);
-    console.log("I run all the time.");
-
-    useEffect(() => {
-        console.log("I run only once.");
-    }, []);
-    //empty array = only runs one time when the page is loaded
-
-    useEffect(() => {
-        console.log("I run when 'keyword' changes.")
-    }, [keyword]);
-
-    useEffect(() => {
-        console.log("I run when 'counter' changes.")
-    }, [counter]);
-
-    const [showing, setShowing] = useState(false);
-    const onClickShowing = () => setShowing((prev) => !prev);
-
-    function Hello(){
-        function byFn(){
-            console.log("bye:(")
-        }
-        function hiFn(){
-            console.log("created :)");
-            return byFn;
-        }
-        useEffect(hiFn, []);
-        //no dependency
-        return <h1>Hello</h1>;
+    const [toDo, setToDo] = useState("");
+    const [toDos, setToDos] = useState([]);
+    const onChange = (event) => setToDo(event.target.value);
+    const onSubmit = (event) => {event.preventDefault();
+        if(toDo === ""){
+        return false;
     }
-
+        setToDo("");
+        /*we cannot modify state directly (like toDo = "")*/
+        setToDos(currentArray => [toDo, ...currentArray]);
+    };
+    console.log(toDos);
+    console.log(toDos.map((item, index) => (<li key={index}>{item}</li>)));
 
     return (<div>
-            <input value={keyword} onChange={onChange} type="text" placeholder="Search here..."/>
-    <h1 className={styles.title}>Welcome back!</h1>
-            <Button text={"Continue"}/>
-            <h1>{counter}</h1>
-            <button onClick={onclick}>click me</button>
-            {showing ? <Hello /> : null}
-            <button onClick={onClickShowing}>{showing ? "Hide" : "Show"}</button>
+            <h1>My To Dos ({toDos.length})</h1>
+            <form onSubmit={onSubmit}>
+             <input onChange={onChange} value={toDo} type="text" placeholder="write your to do..."/>
+                <button>Add To Do</button>
+            </form>
+            <hr />
+            <ul>
+            {toDos.map((item, index) => (<li key={index}>{item}</li>))}</ul>
     </div>
     );
 }
